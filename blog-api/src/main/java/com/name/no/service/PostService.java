@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.name.no.model.CommentEntity;
@@ -27,6 +29,27 @@ public class PostService {
 	@Autowired
 	private CommentRepository commentRepository;
 	
+	@Autowired
+	private SessionRegistry sessionRegistry;
+	 
+	public boolean isUserLoggedIn(String username) {
+		final List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+
+		for (final Object principal : allPrincipals) {
+			if (principal instanceof UserDetails) {
+				final UserDetails user = (UserDetails) principal;
+
+				if (user.getUsername().equals(username)) {
+					return true;
+				}
+				// Do something with user
+//				System.out.println(user);
+			}
+		}
+		
+		return false;
+	}
+
 	public String testMethod() {
 		Iterable<UserEntity> users = userRepository.findAll();
 		Iterator<UserEntity> iter = users.iterator();
